@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Book {

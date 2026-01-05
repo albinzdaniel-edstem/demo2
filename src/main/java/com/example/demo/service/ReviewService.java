@@ -2,10 +2,7 @@ package com.example.demo.service;
 
 import static com.example.demo.mapper.ReviewDtoMapper.toDto;
 
-import com.example.demo.dto.BookDetailsDto;
-import com.example.demo.dto.CreateBookRequestDto;
-import com.example.demo.dto.CreateBookResponseDto;
-import com.example.demo.dto.ReviewDto;
+import com.example.demo.dto.*;
 import com.example.demo.exception.BookNotFoundException;
 import com.example.demo.mapper.ReviewDtoMapper;
 import com.example.demo.model.Book;
@@ -62,7 +59,7 @@ public class ReviewService {
                 .build();
     }
 
-    public BookDetailsDto getBook(String isbnCode) throws BookNotFoundException {
+    public BookDetailsDto getBook(String isbnCode) {
         Optional<Book> optionalBook = bookRepository.findByIsbnCode(isbnCode);
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();
@@ -84,6 +81,30 @@ public class ReviewService {
                     .totalReviews(totalReviews)
                     .ratingDistribution(ratingDistribution)
                     .build();
+        } else throw new BookNotFoundException(isbnCode);
+    }
+
+    public UpdateBookResponseDto updateBook(String isbnCode, UpdateBookRequestDto request) {
+        Optional<Book> optionalBook = bookRepository.findByIsbnCode(isbnCode);
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
+            if (request.getTitle() != null) {
+                book.setTitle(request.getTitle());
+            }
+            if (request.getAuthor() != null) {
+                book.setAuthor(request.getAuthor());
+            }
+            if (request.getPublishedYear() != null) {
+                book.setPublishedYear(request.getPublishedYear());
+            }
+            return UpdateBookResponseDto.builder()
+                    .id(book.getId())
+                    .isbnCode(book.getIsbnCode())
+                    .title(book.getTitle())
+                    .author(book.getAuthor())
+                    .publishedYear(book.getPublishedYear())
+                    .build();
+
         } else throw new BookNotFoundException(isbnCode);
     }
 }
