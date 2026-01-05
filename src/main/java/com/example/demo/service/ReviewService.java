@@ -107,4 +107,12 @@ public class ReviewService {
 
         } else throw new BookNotFoundException(isbnCode);
     }
+
+    public void deleteBook(String isbnCode) {
+        Optional<Book> optionalBook = bookRepository.findByIsbnCode(isbnCode);
+        if (optionalBook.isEmpty()) {
+            throw new BookNotFoundException(isbnCode);
+        }
+        bookRepository.delete(optionalBook.get());
+    }
 }

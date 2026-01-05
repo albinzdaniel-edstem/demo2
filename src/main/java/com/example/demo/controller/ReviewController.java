@@ -30,4 +30,10 @@ public class ReviewController {
             @PathVariable String isbnCode, @RequestBody UpdateBookRequestDto request) {
         return new ResponseEntity<>(reviewService.updateBook(isbnCode, request), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{isbnCode}")
+    public ResponseEntity<Void> deleteBook(@PathVariable String isbnCode) {
+        reviewService.deleteBook(isbnCode);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
