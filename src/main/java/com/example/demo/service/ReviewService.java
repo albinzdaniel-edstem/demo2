@@ -6,7 +6,6 @@ import com.example.demo.dto.BookDetailsDto;
 import com.example.demo.dto.CreateBookRequestDto;
 import com.example.demo.dto.CreateBookResponseDto;
 import com.example.demo.dto.ReviewDto;
-import com.example.demo.exception.BookAlreadyExistsException;
 import com.example.demo.exception.BookNotFoundException;
 import com.example.demo.mapper.ReviewDtoMapper;
 import com.example.demo.model.Book;
@@ -19,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,31 +27,34 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
 
-    public CreateBookResponseDto createBook(CreateBookRequestDto request)
-            throws BookAlreadyExistsException {
-        if (bookRepository.existsBookByIsbnCode(request.getIsbnCode())) {
-            throw new BookAlreadyExistsException(request.getIsbnCode());
-        }
+    @Transactional
+    public CreateBookResponseDto createBook(CreateBookRequestDto request) {
+        Optional<Book> book = bookRepository.findByIsbnCode(request.getIsbnCode());
+        Book savedBook;
+        if (book.isEmpty()) {
+            Book newBook =
+                    Book.builder()
+                            .isbnCode(request.getIsbnCode())
+                            .title(request.getTitle())
+                            .author(request.getAuthor())
+                            .publishedYear(request.getPublishedYear())
+                            .build();
 
-        Book newBook =
-                Book.builder()
-                        .isbnCode(request.getIsbnCode())
-                        .title(request.getTitle())
-                        .author(request.getAuthor())
-                        .publishedYear(request.getPublishedYear())
-                        .build();
-
-        Book savedBook = bookRepository.save(newBook);
+            savedBook = bookRepository.save(newBook);
+        } else savedBook = book.get();
 
         Review newReview =
                 Review.builder()
-                        .book(savedBook)
                         .reviewerName(request.getReviewerName())
                         .rating(request.getRating())
                         .comment(request.getComment())
                         .reviewedOn(request.getReviewedOn())
                         .build();
+
+        savedBook.getReviews().add(newReview);
+
         Review savedReview = reviewRepository.save(newReview);
+        savedBook = bookRepository.save(savedBook);
 
         return CreateBookResponseDto.builder()
                 .book(savedBook)
