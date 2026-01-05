@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookDetailsDto {
-    Book book;
+    BookDto bookDto;
     List<ReviewDto> reviews;
     Double avgRating;
     int totalReviews;

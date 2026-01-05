@@ -1,9 +1,8 @@
 package com.example.demo.service;
 
-import static com.example.demo.mapper.ReviewDtoMapper.toDto;
-
 import com.example.demo.dto.*;
 import com.example.demo.exception.BookNotFoundException;
+import com.example.demo.mapper.BookDtoMapper;
 import com.example.demo.mapper.ReviewDtoMapper;
 import com.example.demo.model.Book;
 import com.example.demo.model.Review;
@@ -42,6 +41,7 @@ public class ReviewService {
 
         Review newReview =
                 Review.builder()
+                        .book(savedBook)
                         .reviewerName(request.getReviewerName())
                         .rating(request.getRating())
                         .comment(request.getComment())
@@ -54,8 +54,8 @@ public class ReviewService {
         savedBook = bookRepository.save(savedBook);
 
         return CreateBookResponseDto.builder()
-                .book(savedBook)
-                .reviewDto(toDto(savedReview))
+                .bookDto(BookDtoMapper.toDto(savedBook))
+                .reviewDto(ReviewDtoMapper.toDto(savedReview))
                 .build();
     }
 
@@ -75,7 +75,7 @@ public class ReviewService {
                                     Collectors.groupingBy(
                                             Review::getRating, Collectors.counting()));
             return BookDetailsDto.builder()
-                    .book(book)
+                    .bookDto(BookDtoMapper.toDto(book))
                     .reviews(reviewDtoList)
                     .avgRating(avgRating)
                     .totalReviews(totalReviews)
@@ -97,6 +97,7 @@ public class ReviewService {
             if (request.getPublishedYear() != null) {
                 book.setPublishedYear(request.getPublishedYear());
             }
+			bookRepository.save(book);
             return UpdateBookResponseDto.builder()
                     .id(book.getId())
                     .isbnCode(book.getIsbnCode())

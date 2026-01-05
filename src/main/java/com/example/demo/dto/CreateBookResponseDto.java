@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.model.Book;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateBookResponseDto {
-    private Book book;
+    private BookDto bookDto;
     private ReviewDto reviewDto;
 }
