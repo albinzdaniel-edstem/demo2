@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import java.time.Year;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateBookResponseDto {
-    private BookDto bookDto;
-    private ReviewDto reviewDto;
+public class UpdateBookRequestDto {
+    private String title;
+    private String author;
+    private Year publishedYear;
 }

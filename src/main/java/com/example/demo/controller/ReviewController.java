@@ -1,10 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.BookDetailsDto;
-import com.example.demo.dto.CreateBookRequestDto;
-import com.example.demo.dto.CreateBookResponseDto;
-import com.example.demo.exception.BookAlreadyExistsException;
-import com.example.demo.exception.BookNotFoundException;
+import com.example.demo.dto.*;
 import com.example.demo.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,13 +16,24 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<CreateBookResponseDto> createBookWithReview(
-            @RequestBody CreateBookRequestDto request) throws BookAlreadyExistsException {
+            @RequestBody CreateBookRequestDto request) {
         return new ResponseEntity<>(reviewService.createBook(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/{isbnCode}")
-    public ResponseEntity<BookDetailsDto> findBookUsingIsbnCode(@PathVariable String isbnCode)
-            throws BookNotFoundException {
+    public ResponseEntity<BookDetailsDto> findBookUsingIsbnCode(@PathVariable String isbnCode) {
         return new ResponseEntity<>(reviewService.getBook(isbnCode), HttpStatus.OK);
+    }
+
+    @PutMapping("/{isbnCode}")
+    public ResponseEntity<UpdateBookResponseDto> updateBook(
+            @PathVariable String isbnCode, @RequestBody UpdateBookRequestDto request) {
+        return new ResponseEntity<>(reviewService.updateBook(isbnCode, request), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{isbnCode}")
+    public ResponseEntity<Void> deleteBook(@PathVariable String isbnCode) {
+        reviewService.deleteBook(isbnCode);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
